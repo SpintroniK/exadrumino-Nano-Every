@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm -f *.bin &&
+rm -f *.d &&
+rm -f *.eep &&
+rm -f *.elf &&
+rm -f *.hex &&
+rm -f *.o

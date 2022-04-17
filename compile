@@ -1,0 +1,20 @@
+#!/bin/bash
+
+BASENAME="main"
+EXT="cpp"
+SRC="$BASENAME.$EXT"
+
+echo $AVR_TOOLS_DIR
+
+BIN_DIR="$AVR_TOOLS_DIR/avr-gcc/7.3.0-atmel3.6.1-arduino5/bin"
+
+GPP="$BIN_DIR/avr-g++"
+CPY="$BIN_DIR/avr-objcopy"
+SIZ="$BIN_DIR/avr-size"
+
+$GPP -c -g -Os -w -std=c++17 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Wno-error=narrowing -MMD -flto -mmcu=atmega4809 -DF_CPU=16000000L -DARDUINO=10809 -DARDUINO_AVR_NANO_EVERY "$SRC" -o "$BASENAME.o" &&
+$GPP -w -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -Wl,--section-start=.text=0x0 -mmcu=atmega4809 -o "$BASENAME.elf" "$BASENAME.o" &&
+$CPY -O binary -R .eeprom "$BASENAME.elf" "$BASENAME.bin" &&
+$CPY -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 "$BASENAME.elf" "$BASENAME.eep" &&
+$CPY -O ihex -R .eeprom "$BASENAME.elf" "$BASENAME.hex" &&
+$SIZ -C "$BASENAME.elf"

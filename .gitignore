@@ -1,0 +1,7 @@
+*.d
+*.bin
+*.eep
+*.elf
+*.hex
+*.o
+*.json

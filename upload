@@ -1,0 +1,19 @@
+#!/bin/bash
+
+PORT="/dev/ttyACM0"
+
+BASENAME="main"
+EXT="cpp"
+SRC="$BASENAME.$EXT"
+
+echo $AVR_TOOLS_DIR
+
+AVRDUDE_DIR="$AVR_TOOLS_DIR/avrdude/6.3.0-arduino17/"
+
+AVRDUDE="$AVRDUDE_DIR/bin/avrdude"
+CONFDIR="$AVRDUDE_DIR/etc/avrdude.conf"
+
+python3 ./reset.py "$PORT" && 
+
+$AVRDUDE -C$CONFDIR -v -patmega4809 -cjtag2updi -P$PORT -b115200 -e -D -Uflash:w:"$BASENAME.hex":i -Ufuse2:w:0x01:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
+
