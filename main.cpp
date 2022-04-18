@@ -1,10 +1,16 @@
-#include "src/Usart.hpp"
-
 // #include <avr/iom4809.h>
+
+#include "src/IO/Usart.hpp"
+#include "src/IO/Pin.hpp"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
 #include <stdlib.h>
+
+using namespace IO;
+
+using Led = Pin<PORTE_ADDR, PIN2_bm>;
 
 int main()
 {
@@ -15,9 +21,13 @@ int main()
 
     Usart<3> usart{115'200};
 
+
+    Led::ConfigureAsOutput();
+
     while(1)
     {
-        usart.SendChar('a');
+        Led::Toggle();
+        usart.SendChar('c');
     }
 
     return EXIT_SUCCESS;
