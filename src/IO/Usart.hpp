@@ -35,18 +35,18 @@ namespace IO
             default: static_assert(N <= 3, "Invalid USART number."); break;
         }
 
-        usart<N>().BAUD = Usart::BaudRate(br);
-        usart<N>().CTRLB |= USART_RXEN_bm | USART_TXEN_bm; 
-        usart<N>().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
+        usart().BAUD = Usart::BaudRate(br);
+        usart().CTRLB |= USART_RXEN_bm | USART_TXEN_bm; 
+        usart().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
     }
 
     constexpr void SendChar(char c)
     {
-        while(!(usart<N>().STATUS & USART_DREIF_bm))
+        while(!(usart().STATUS & USART_DREIF_bm))
         {
             ;
         }        
-        usart<N>().TXDATAL = c;
+        usart().TXDATAL = c;
     }
 
     static constexpr uint16_t BaudRate(uint32_t baudRate)
@@ -54,16 +54,15 @@ namespace IO
         return static_cast<uint16_t>(static_cast<float>((F_CPU * 64 / (16 * static_cast<float>(baudRate))) + 0.5));
     }
 
-    template <uint8_t n>
     static constexpr USART_t& usart()
     {
-        switch(n)
+        switch(N)
         {
             case 0: return USART0;
             case 1: return USART1;
             case 2: return USART2;
             case 3: return USART3;
-            default: static_assert(n <= 3, "Invalid USART number.");
+            default: static_assert(N <= 3, "Invalid USART number.");
         }
     }
 
