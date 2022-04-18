@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 namespace IO
 {
@@ -35,7 +36,7 @@ namespace IO
             default: static_assert(N <= 3, "Invalid USART number."); break;
         }
 
-        usart().BAUD = Usart::BaudRate(br);
+        usart().BAUD = BaudRate(br);
         usart().CTRLB |= USART_RXEN_bm | USART_TXEN_bm; 
         usart().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
     }
@@ -47,6 +48,14 @@ namespace IO
             ;
         }        
         usart().TXDATAL = c;
+    }
+
+    constexpr void SendString(char* str)
+    {
+        for(size_t i = 0; i < strlen(str); i++)
+        {
+            SendChar(str[i]);
+        }
     }
 
     static constexpr uint16_t BaudRate(uint32_t baudRate)
