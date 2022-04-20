@@ -43,7 +43,8 @@ int main()
     Adc0::EnableInterrupts();
     Adc0::EnableEvents();
 
-    ADC0.MUXPOS  = ADC_MUXPOS_AIN3_gc;
+
+    Adc0::SelectChannel(ADC_MUXPOS_AIN3_gc);
 
     Adc0::SetDivider<8>();
     Adc0::SetReference(Vref::External);

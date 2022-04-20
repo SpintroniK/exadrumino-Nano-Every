@@ -80,9 +80,10 @@ namespace Analog
             }
         }
 
-        static constexpr void SelectChannel()
+        static constexpr void SelectChannel(ADC_MUXPOS_t chan)
         {
-
+            channel = chan;
+            ADC0.MUXPOS = channel;
         }
 
         static constexpr void Enable()
@@ -119,9 +120,11 @@ namespace Analog
             return value;
         }
 
+
     private:
 
         inline static ValueType value = 0;
+        inline static ADC_MUXPOS_t channel = ADC_MUXPOS_t::ADC_MUXPOS_AIN0_gc;
 
     };
     
