@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-namespace IO
+namespace DigitalIO
 {
 
     template <uint16_t portAddr, uint8_t mask>

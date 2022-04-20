@@ -1,6 +1,6 @@
 #pragma once
 
-namespace IO
+namespace DigitalIO
 {
     
     static const auto PORTA_ADDR = reinterpret_cast<uint16_t>(&PORTA); 

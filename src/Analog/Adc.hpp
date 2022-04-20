@@ -2,8 +2,8 @@
 
 #include <avr/io.h>
 
-#include "../IO/Pin.hpp"
-#include "../IO/Port.hpp"
+#include "../DigitalIO/Pin.hpp"
+#include "../DigitalIO/Port.hpp"
 
 namespace Analog
 {

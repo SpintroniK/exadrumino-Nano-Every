@@ -1,8 +1,8 @@
 //  #include <avr/iom4809.h>
 
 #include "src/Analog/Adc.hpp"
-#include "src/IO/Usart.hpp"
-#include "src/IO/Pin.hpp"
+#include "src/DigitalIO/Usart.hpp"
+#include "src/DigitalIO/Pin.hpp"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using namespace IO;
+using namespace DigitalIO;
 using namespace Analog;
 
 using Led = Pin<PORTE_ADDR, PIN2_bm>;

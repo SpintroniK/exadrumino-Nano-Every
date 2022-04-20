@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace IO
+namespace DigitalIO
 {
 
     template <uint8_t N>
