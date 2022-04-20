@@ -10,6 +10,18 @@ namespace Analog
 
     static const auto ADC0_ADDR = reinterpret_cast<uint16_t>(&ADC0);
 
+    class AdcInterrupts
+    {
+    public:
+
+        AdcInterrupts() = delete;
+        ~AdcInterrupts() = delete;
+
+    private:
+
+        static void ResReady() __asm__("__vector_22") __attribute__((__signal__, __used__, __externally_visible__));    
+    };
+
     enum class Vref
     {
         External,
@@ -21,6 +33,8 @@ namespace Analog
     class Adc
     {
         
+        friend class AdcInterrupts;
+
     public:
 
         Adc() = delete;
@@ -71,7 +85,7 @@ namespace Analog
 
         static constexpr void Enable()
         {
-            ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc; // TODO
+            ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc; // TODO
         }
 
         static constexpr void StartConversion()
@@ -96,7 +110,14 @@ namespace Analog
             return *reinterpret_cast<ADC_t*>(addr);
         }
 
+        static constexpr uint16_t GetValue()
+        {
+            return value;
+        }
+
     private:
+
+        static uint8_t value;
 
     };
     

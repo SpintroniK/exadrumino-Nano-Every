@@ -4,7 +4,7 @@ BASENAME="main"
 EXT="cpp"
 SRC="$BASENAME.$EXT"
 
-echo $AVR_TOOLS_DIR
+echo "AVR_TOOLS_DIR=$AVR_TOOLS_DIR"
 
 BIN_DIR="$AVR_TOOLS_DIR/avr-gcc/7.3.0-atmel3.6.1-arduino5/bin"
 

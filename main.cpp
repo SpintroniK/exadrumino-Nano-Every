@@ -1,4 +1,4 @@
-// #include <avr/iom4809.h>
+//  #include <avr/iom4809.h>
 
 #include "src/Analog/Adc.hpp"
 #include "src/IO/Usart.hpp"
@@ -15,6 +15,16 @@ using namespace Analog;
 
 using Led = Pin<PORTE_ADDR, PIN2_bm>;
 using Adc0 = Adc<ADC0_ADDR>;
+
+template <> decltype(Adc0::value) Adc0::value = 0;
+
+
+void AdcInterrupts::ResReady()
+{
+    ADC0.INTFLAGS = ADC_RESRDY_bm;
+    Adc0::value = ADC0.RES;
+}
+
 
 int main()
 {
@@ -38,16 +48,8 @@ int main()
 
     ADC0.MUXPOS  = ADC_MUXPOS_AIN3_gc;
 
-    // ADC0.CTRLC = ADC_PRESC_DIV8_gc      /* CLK_PER divided by 4 */
-    //            | ADC_REFSEL_VREFA_gc;  /* Internal reference */
-
-
     Adc0::SetDivider<8>();
     Adc0::SetReference(Vref::External);
-    
-    // ADC0.CTRLA = ADC_ENABLE_bm          /* ADC Enable: enabled */
-    //            | ADC_RESSEL_10BIT_gc;   /* 10-bit mode */
-    
 
     Adc0::Enable();
 
@@ -61,15 +63,15 @@ int main()
         Adc0::StartConversion();
 
         Led::Toggle();
-        while(!Adc0::ConversionDone())
-        {
-            ;
-        }
+        // while(!Adc0::ConversionDone())
+        // {
+        //     ;
+        // }
 
-        const auto value = Adc0::ReadValue<uint16_t>();
+        // const auto value = Adc0::ReadValue<uint16_t>();
 
         char str[32];
-        sprintf(str, "%d\n", value);
+        sprintf(str, "%d\n", Adc0::GetValue());
 
         usart.SendString(str);
 
