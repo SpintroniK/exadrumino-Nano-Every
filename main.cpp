@@ -14,9 +14,7 @@ using namespace IO;
 using namespace Analog;
 
 using Led = Pin<PORTE_ADDR, PIN2_bm>;
-using Adc0 = Adc<ADC0_ADDR>;
-
-template <> decltype(Adc0::value) Adc0::value = 0;
+using Adc0 = Adc<ADC0_ADDR, Adc8bitType>;
 
 
 void AdcInterrupts::ResReady()
@@ -40,7 +38,6 @@ int main()
     PORTD.PIN3CTRL &= ~PORT_ISC_gm; 
     PORTD.PIN3CTRL |= PORT_ISC_INPUT_DISABLE_gc;    // Disable digital input
     PORTD.PIN3CTRL &= ~PORT_PULLUPEN_bm;            // Disable pull-up
-
 
 
     Adc0::EnableInterrupts();

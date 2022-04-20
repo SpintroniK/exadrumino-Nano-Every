@@ -10,6 +10,9 @@ namespace Analog
 
     static const auto ADC0_ADDR = reinterpret_cast<uint16_t>(&ADC0);
 
+    using Adc10bitType = uint16_t;
+    using Adc8bitType = uint8_t;
+
     class AdcInterrupts
     {
     public:
@@ -29,10 +32,10 @@ namespace Analog
         Vdd,
     };
 
-    template <uint16_t addr>
+    template <uint16_t addr, typename ValueType>
     class Adc
     {
-        
+
         friend class AdcInterrupts;
 
     public:
@@ -53,19 +56,18 @@ namespace Analog
         template <uint16_t div>
         static constexpr void SetDivider()
         {
-            // switch (div)
-            // {
-            //     case 2:   adc().CTRLC |= ADC_PRESC_DIV2_gc; break;
-            //     case 4:   adc().CTRLC |= ADC_PRESC_DIV4_gc; break;
-                //case 8:   
-                adc().CTRLC = ADC_PRESC_DIV8_gc | ADC_REFSEL_VREFA_gc; //break;
-                // case 16:  adc().CTRLC |= ADC_PRESC_DIV16_gc; break;
-                // case 32:  adc().CTRLC |= ADC_PRESC_DIV32_gc; break;
-                // case 64:  adc().CTRLC |= ADC_PRESC_DIV64_gc; break;
-                // case 128: adc().CTRLC |= ADC_PRESC_DIV128_gc; break;
-                // case 256: adc().CTRLC |= ADC_PRESC_DIV256_gc; break;
-            //     default: static_assert(div % 2 == 0 && div >= 2 && div <= 256, "Invalid ADC prescaler.");
-            // }
+            switch (div)
+            {
+                case 2:   adc().CTRLC |= ADC_PRESC_DIV2_gc; break;
+                case 4:   adc().CTRLC |= ADC_PRESC_DIV4_gc; break;
+                case 8:   adc().CTRLC |= ADC_PRESC_DIV8_gc; break;
+                case 16:  adc().CTRLC |= ADC_PRESC_DIV16_gc; break;
+                case 32:  adc().CTRLC |= ADC_PRESC_DIV32_gc; break;
+                case 64:  adc().CTRLC |= ADC_PRESC_DIV64_gc; break;
+                case 128: adc().CTRLC |= ADC_PRESC_DIV128_gc; break;
+                case 256: adc().CTRLC |= ADC_PRESC_DIV256_gc; break;
+                default: static_assert(div % 2 == 0 && div >= 2 && div <= 256, "Invalid ADC prescaler.");
+            }
         }
 
         static constexpr void SetReference(Vref vref)
@@ -85,7 +87,15 @@ namespace Analog
 
         static constexpr void Enable()
         {
-            ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc; // TODO
+            if constexpr(sizeof(ValueType) == 1)
+            {
+                ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
+            }
+            
+            if constexpr(sizeof(ValueType) > 1)
+            {
+                ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc;
+            }
         }
 
         static constexpr void StartConversion()
@@ -93,12 +103,6 @@ namespace Analog
             ADC0.COMMAND = ADC_STCONV_bm;
         }
 
-        template <typename T>
-        static constexpr T ReadValue()
-        {
-            ADC0.INTFLAGS = ADC_RESRDY_bm;
-            return static_cast<T>(ADC0.RES);
-        }
 
         static constexpr bool ConversionDone()
         {
@@ -110,14 +114,14 @@ namespace Analog
             return *reinterpret_cast<ADC_t*>(addr);
         }
 
-        static constexpr uint16_t GetValue()
+        static constexpr ValueType GetValue()
         {
             return value;
         }
 
     private:
 
-        static uint8_t value;
+        inline static ValueType value = 0;
 
     };
     
