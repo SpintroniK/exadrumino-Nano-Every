@@ -33,7 +33,9 @@ namespace DigitalIO
         {
             return *reinterpret_cast<PORT_t*>(portAddr);
         }
+        
     private:
+
     };
     
 } // namespace IO

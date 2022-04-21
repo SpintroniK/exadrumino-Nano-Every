@@ -4,6 +4,7 @@
 
 #include "../DigitalIO/Pin.hpp"
 #include "../DigitalIO/Port.hpp"
+#include "../Util/Cpp.hpp"
 
 namespace Analog
 {
@@ -88,12 +89,12 @@ namespace Analog
 
         static constexpr void Enable()
         {
-            if constexpr(sizeof(ValueType) == 1)
+            if(Util::is_same<ValueType, Adc8bitType>::value)
             {
                 ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
             }
             
-            if constexpr(sizeof(ValueType) > 1)
+            if constexpr(Util::is_same<ValueType, Adc10bitType>::value)
             {
                 ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc;
             }

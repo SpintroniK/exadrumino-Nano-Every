@@ -1,4 +1,4 @@
-//  #include <avr/iom4809.h>
+// #include <avr/iom4809.h>
 
 #include "src/Analog/Adc.hpp"
 #include "src/DigitalIO/Usart.hpp"
@@ -14,10 +14,12 @@ using namespace DigitalIO;
 using namespace Analog;
 
 using Led = Pin<PORTE_ADDR, PIN2_bm>;
+
+using Usart3 = Usart<3>;
 using Adc0 = Adc<ADC0_ADDR, Adc8bitType>;
 
 
-void AdcInterrupts::ResReady()
+ void AdcInterrupts::ResReady()
 {
     ADC0.INTFLAGS = ADC_RESRDY_bm;
     Adc0::value = ADC0.RES;
@@ -31,7 +33,7 @@ int main()
 
     sei();
 
-    Usart<3> usart{115'200};
+    Usart3 usart{115'200};
 
 
     // PD3 => AIN3
