@@ -89,7 +89,7 @@ namespace Analog
 
         static constexpr void Enable()
         {
-            if(Util::is_same<ValueType, Adc8bitType>::value)
+            if constexpr(Util::is_same<ValueType, Adc8bitType>::value)
             {
                 ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
             }
