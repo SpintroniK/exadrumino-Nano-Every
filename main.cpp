@@ -16,12 +16,12 @@ using namespace Analog;
 using Led = Pin<PORTE_ADDR, PIN2_bm>;
 
 using Usart3 = Usart<3>;
-using Adc0 = Adc<ADC0_ADDR, Adc8bitType>;
+using Adc0 = Adc<Adc0Addr, Adc8bitType>;
 
 
  void AdcInterrupts::ResReady()
 {
-    ADC0.INTFLAGS = ADC_RESRDY_bm;
+    Adc0::ResetInterrupt();
     Adc0::value = ADC0.RES;
 }
 

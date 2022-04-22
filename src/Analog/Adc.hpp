@@ -9,7 +9,7 @@
 namespace Analog
 {
 
-    static const auto ADC0_ADDR = reinterpret_cast<uint16_t>(&ADC0);
+    static const auto Adc0Addr = reinterpret_cast<uint16_t>(&ADC0);
 
     using Adc10bitType = uint16_t;
     using Adc8bitType = uint8_t;
@@ -23,7 +23,7 @@ namespace Analog
 
     private:
 
-        static void ResReady() __asm__("__vector_22") __attribute__((__signal__, __used__, __externally_visible__));    
+        static void ResReady() __asm__("__vector_22") __attribute__((__signal__, __used__, __externally_visible__));
     };
 
     enum class Vref
@@ -43,6 +43,11 @@ namespace Analog
 
         Adc() = delete;
         ~Adc() = delete;
+
+        static constexpr auto StartConvEvent()
+        {
+            return EVSYS.USERADC0;
+        }
 
         static constexpr void EnableInterrupts()
         {
@@ -84,31 +89,36 @@ namespace Analog
         static constexpr void SelectChannel(ADC_MUXPOS_t chan)
         {
             channel = chan;
-            ADC0.MUXPOS = channel;
+            adc().MUXPOS = channel;
         }
 
         static constexpr void Enable()
         {
             if constexpr(Util::is_same<ValueType, Adc8bitType>::value)
             {
-                ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
+                adc().CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
             }
             
             if constexpr(Util::is_same<ValueType, Adc10bitType>::value)
             {
-                ADC0.CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc;
+                adc().CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc;
             }
         }
 
         static constexpr void StartConversion()
         {
-            ADC0.COMMAND = ADC_STCONV_bm;
+            adc().COMMAND = ADC_STCONV_bm;
         }
 
 
         static constexpr bool ConversionDone()
         {
-            return ADC0.INTFLAGS & ADC_RESRDY_bm;
+            return adc().INTFLAGS & ADC_RESRDY_bm;
+        }
+
+        static constexpr void ResetInterrupt()
+        {
+            adc().INTFLAGS = ADC_RESRDY_bm;
         }
 
         static constexpr auto& adc()
