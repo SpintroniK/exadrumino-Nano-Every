@@ -93,7 +93,7 @@ namespace Analog
         template <uint16_t div>
         static constexpr void SetDivider()
         {
-            switch (div)
+            switch(div)
             {
                 case 2:   adc().CTRLC |= ADC_PRESC_DIV2_gc; break;
                 case 4:   adc().CTRLC |= ADC_PRESC_DIV4_gc; break;
