@@ -11,8 +11,8 @@ namespace Analog
 
     static const auto Adc0Addr = reinterpret_cast<uint16_t>(&ADC0);
 
-    using Adc10bitType = uint16_t;
-    using Adc8bitType = uint8_t;
+    class Adc10bitType;
+    class Adc8bitType;
 
     class AdcInterrupts
     {
@@ -33,8 +33,39 @@ namespace Analog
         Vdd,
     };
 
+    template <typename T, typename Enable = void>
+    class AdcBase;
+
+    template <typename T>
+    class AdcBase<T, Util::enable_if_t<Util::is_same<T, Adc8bitType>::value>>
+    {
+    public:
+        AdcBase() = delete;
+        ~AdcBase() = delete;
+
+    protected:
+
+        inline static uint8_t value{};
+
+    };
+    
+
+    template <typename T>
+    class AdcBase<T, Util::enable_if_t<Util::is_same<T, Adc10bitType>::value>>
+    {
+    public:
+        AdcBase() = delete;
+        ~AdcBase() = delete;
+
+    protected:
+
+        inline static uint16_t value{};
+
+    };
+    
+
     template <uint16_t addr, typename ValueType>
-    class Adc
+    class Adc : private AdcBase<ValueType>
     {
 
         friend class AdcInterrupts;
@@ -121,20 +152,20 @@ namespace Analog
             adc().INTFLAGS = ADC_RESRDY_bm;
         }
 
-        static constexpr auto& adc()
+        static constexpr auto GetValue()
         {
-            return *reinterpret_cast<ADC_t*>(addr);
-        }
-
-        static constexpr ValueType GetValue()
-        {
-            return value;
+            return Adc<addr, ValueType>::value;
         }
 
 
     private:
 
-        inline static ValueType value = 0;
+        static constexpr auto& adc()
+        {
+            return *reinterpret_cast<ADC_t*>(addr);
+        }
+
+        //inline static ValueType value = 0;
         inline static ADC_MUXPOS_t channel = ADC_MUXPOS_t::ADC_MUXPOS_AIN0_gc;
 
     };

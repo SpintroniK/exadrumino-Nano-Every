@@ -3,6 +3,7 @@
 #include "src/Analog/Adc.hpp"
 #include "src/DigitalIO/Usart.hpp"
 #include "src/DigitalIO/Pin.hpp"
+#include "src/Timing/TCA.hpp"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -10,13 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using namespace DigitalIO;
 using namespace Analog;
+using namespace DigitalIO;
+using namespace Timing;
 
 using Led = Pin<PORTE_ADDR, PIN2_bm>;
 
 using Usart3 = Usart<3>;
 using Adc0 = Adc<Adc0Addr, Adc8bitType>;
+using Tca = TCA<TCASingle>;
 
 
  void AdcInterrupts::ResReady()
