@@ -37,7 +37,7 @@ namespace Analog
     class AdcBase;
 
     template <typename T>
-    class AdcBase<T, Util::enable_if_t<Util::is_same<T, Adc8bitType>::value>>
+    class AdcBase<T, Util::enable_if_t<Util::is_same_v<T, Adc8bitType>>>
     {
     public:
         AdcBase() = delete;
@@ -51,7 +51,7 @@ namespace Analog
     
 
     template <typename T>
-    class AdcBase<T, Util::enable_if_t<Util::is_same<T, Adc10bitType>::value>>
+    class AdcBase<T, Util::enable_if_t<Util::is_same_v<T, Adc10bitType>>>
     {
     public:
         AdcBase() = delete;
@@ -125,12 +125,12 @@ namespace Analog
 
         static constexpr void Enable()
         {
-            if constexpr(Util::is_same<ValueType, Adc8bitType>::value)
+            if constexpr(Util::is_same_v<ValueType, Adc8bitType>)
             {
                 adc().CTRLA = ADC_ENABLE_bm | ADC_RESSEL_8BIT_gc;
             }
             
-            if constexpr(Util::is_same<ValueType, Adc10bitType>::value)
+            if constexpr(Util::is_same_v<ValueType, Adc10bitType>)
             {
                 adc().CTRLA = ADC_ENABLE_bm | ADC_RESSEL_10BIT_gc;
             }

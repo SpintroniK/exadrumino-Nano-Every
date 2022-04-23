@@ -28,4 +28,7 @@ namespace Util
     template< bool B, class T = void >
     using enable_if_t = typename enable_if<B,T>::type;
 
+    template< class T, class U >
+    inline constexpr bool is_same_v = is_same<T, U>::value;
+
 } // namespace Util
