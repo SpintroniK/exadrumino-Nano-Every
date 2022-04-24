@@ -29,6 +29,16 @@ namespace DigitalIO
             port().OUTTGL |= mask;
         }
 
+        static constexpr void SetHigh()
+        {
+            port().OUTSET |= mask;
+        }
+
+        static constexpr void SetLow()
+        {
+            port().OUTCLR |= mask;
+        }
+
         static constexpr auto& port()
         {
             return *reinterpret_cast<PORT_t*>(portAddr);
