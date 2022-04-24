@@ -4,7 +4,9 @@
 #include "src/DigitalIO/Usart.hpp"
 #include "src/DigitalIO/Pin.hpp"
 #include "src/Event/EventSystem.hpp"
+#include "src/Timing/Counter.hpp"
 #include "src/Timing/TCA.hpp"
+#include "src/Timing/TCB.hpp"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -23,14 +25,23 @@ using Led = Pin<PORTE_ADDR, PIN2_bm>;
 using Usart3 = Usart<3>;
 using Adc0 = Adc<Adc0Addr, Adc8bitType>;
 using Tca = TCA<TCASingle>;
+using Tcb = TCB<0>;
 
+Counter<uint8_t> c;
 
 void AdcInterrupts::ResReady()
 {
     Adc0::ResetInterrupt();
     Adc0::value = ADC0.RES;
 
-    Led::Toggle();
+    //Led::Toggle();
+}
+
+void TCBInterrupts::TCB0Overflow()
+{
+    TCB0.INTFLAGS |= TCB_CAPT_bm;
+
+    c.Increment();
 }
 
 
@@ -72,6 +83,9 @@ int main()
     
     TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV16_gc | TCA_SINGLE_ENABLE_bm;
 
+    Tcb::EnableInterrupts();
+    TCB0.CCMP = 199; 
+    TCB0.CTRLA |= TCB_CLKSEL_CLKTCA_gc | TCB_ENABLE_bm;
 
     while(1)
     {

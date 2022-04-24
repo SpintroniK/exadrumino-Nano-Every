@@ -36,7 +36,7 @@ namespace Event
                     break;
                 }
 
-                default: static_assert(channel >= 0 && channel <= 8, ""); break;
+                default: static_assert(channel <= 7, ""); break;
             }
         }
 
