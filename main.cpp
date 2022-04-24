@@ -1,12 +1,7 @@
 // #include <avr/iom4809.h>
 
-#include "src/Analog/Adc.hpp"
-#include "src/DigitalIO/Usart.hpp"
-#include "src/DigitalIO/Pin.hpp"
-#include "src/Event/EventSystem.hpp"
-#include "src/Timing/Counter.hpp"
-#include "src/Timing/TCA.hpp"
-#include "src/Timing/TCB.hpp"
+#include "src/Module/Trigger.hpp"
+#include "src/Nano.hpp"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -27,23 +22,35 @@ using Adc0 = Adc<Adc0Addr, Adc8bitType>;
 using Tca = TCA<TCASingle>;
 using Tcb = TCB<0>;
 
-Counter<uint8_t> c;
+
+Module::Trigger t{2, 4, 50};
+Counter<uint8_t> clock{};
+
+uint8_t value{};
 
 void AdcInterrupts::ResReady()
 {
     Adc0::ResetInterrupt();
-    Adc0::value = ADC0.RES;
 
-    //Led::Toggle();
+    value = t.Process(ADC0.RES, clock.GetCount());
+    if(value == 2)
+    {
+        Led::SetHigh();
+    }
+    else
+    {
+        Led::SetLow();
+    }
+
 }
+
 
 void TCBInterrupts::TCB0Overflow()
 {
     TCB0.INTFLAGS |= TCB_CAPT_bm;
 
-    c.Increment();
+    clock.Increment();
 }
-
 
 int main()
 {
@@ -61,12 +68,13 @@ int main()
     PORTD.PIN3CTRL |= PORT_ISC_INPUT_DISABLE_gc;    // Disable digital input
     PORTD.PIN3CTRL &= ~PORT_PULLUPEN_bm;            // Disable pull-up
 
-    EventSystem::Connect<0>(0x80 << 0, EVSYS.USERADC0); //EVSYS_GENERATOR_TCA0_OVF_gc;
+    constexpr uint8_t EVSYS_GENERATOR_TCA0_OVF_gc = 0x80 << 0; // Should already be defined, but it's not...
+    EventSystem::Connect<0>(EVSYS_GENERATOR_TCA0_OVF_gc, EVSYS.USERADC0);
 
     // Configure ADC
     Adc0::EnableInterrupts();
     Adc0::EnableEvents();
-    Adc0::SelectChannel(ADC_MUXPOS_AIN3_gc);
+    Adc0::SelectChannel(ADC_MUXPOS_AIN2_gc);
     Adc0::SetDivider<8>();
     Adc0::SetReference(Vref::External);
     Adc0::Enable();
@@ -84,17 +92,21 @@ int main()
     TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV16_gc | TCA_SINGLE_ENABLE_bm;
 
     Tcb::EnableInterrupts();
-    TCB0.CCMP = 199; 
+    TCB0.CCMP = 999; 
     TCB0.CTRLA |= TCB_CLKSEL_CLKTCA_gc | TCB_ENABLE_bm;
+
+
 
     while(1)
     {
+        //if(value >= 1)
+        // {
+        //     char str[32];
+        //     sprintf(str, "%d\n", value);
 
-        char str[32];
-        sprintf(str, "%d\n", Adc0::GetValue());
-
-        usart.SendString(str);
-
+        //     usart.SendString(str);
+        // }
+        ;
     }
 
     return EXIT_SUCCESS;
