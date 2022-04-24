@@ -10,25 +10,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-using namespace Analog;
-using namespace DigitalIO;
-using namespace Event;
-using namespace Timing;
+using Led = DigitalIO::Pin<DigitalIO::PORTE_ADDR, PIN2_bm>;
 
-using Led = Pin<PORTE_ADDR, PIN2_bm>;
-
-using Usart3 = Usart<3>;
-using Adc0 = Adc<Adc0Addr, Adc8bitType>;
-using Tca = TCA<TCASingle>;
-using Tcb = TCB<0>;
+using Usart3 = DigitalIO::Usart<3>;
+using Adc0 = Analog::Adc<Analog::Adc0Addr, Analog::Adc8bitType>;
+using Tca = Timing::TCA<Timing::TCASingle>;
+using Tcb = Timing::TCB<0>;
 
 
 Module::Trigger t{2, 4, 50};
-Counter<uint8_t> clock{};
+Timing::Counter<uint8_t> clock{};
 
 uint8_t value{};
 
-void AdcInterrupts::ResReady()
+void Analog::AdcInterrupts::ResReady()
 {
     Adc0::ResetInterrupt();
 
@@ -45,7 +40,7 @@ void AdcInterrupts::ResReady()
 }
 
 
-void TCBInterrupts::TCB0Overflow()
+void Timing::TCBInterrupts::TCB0Overflow()
 {
     TCB0.INTFLAGS |= TCB_CAPT_bm;
 
@@ -69,21 +64,21 @@ int main()
     PORTD.PIN3CTRL &= ~PORT_PULLUPEN_bm;            // Disable pull-up
 
     constexpr uint8_t EVSYS_GENERATOR_TCA0_OVF_gc = 0x80 << 0; // Should already be defined, but it's not...
-    EventSystem::Connect<0>(EVSYS_GENERATOR_TCA0_OVF_gc, EVSYS.USERADC0);
+    Event::EventSystem::Connect<0>(EVSYS_GENERATOR_TCA0_OVF_gc, EVSYS.USERADC0);
 
     // Configure ADC
     Adc0::EnableInterrupts();
     Adc0::EnableEvents();
     Adc0::SelectChannel(ADC_MUXPOS_AIN2_gc);
     Adc0::SetDivider<8>();
-    Adc0::SetReference(Vref::External);
+    Adc0::SetReference(Analog::Vref::External);
     Adc0::Enable();
 
     // Configure on-board LED
     Led::ConfigureAsOutput();
 
     // Configure TCA
-    Tca::SetSingleMode(TCASingleMode::Normal);
+    Tca::SetSingleMode(Timing::TCASingleMode::Normal);
     Tca::DisableEventCounting();
     Tca::SetPeriod(11);
 
