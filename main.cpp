@@ -18,24 +18,26 @@ using Tca = Timing::TCA<Timing::TCASingle>;
 using Tcb = Timing::TCB<0>;
 
 
-Module::Trigger t{2, 4, 50};
+Module::Trigger t{2, 4, 40};
 Timing::Counter<uint8_t> clock{};
 
 uint8_t value{};
+volatile uint8_t vel{};
 
 void Analog::AdcInterrupts::ResReady()
 {
     Adc0::ResetInterrupt();
 
     value = t.Process(ADC0.RES, clock.GetCount());
-    if(value == 2)
+    if(value > 0)
     {
-        Led::SetHigh();
+        // Led::SetHigh();
+        vel = value;
     }
-    else
-    {
-        Led::SetLow();
-    }
+    // else
+    // {
+    //     Led::SetLow();
+    // }
 
 }
 
@@ -94,14 +96,14 @@ int main()
 
     while(1)
     {
-        //if(value >= 1)
-        // {
-        //     char str[32];
-        //     sprintf(str, "%d\n", value);
+        if(vel >= 1)
+        {
+            usart.SendByte(0x90);
+            usart.SendByte(38);
+            usart.SendByte(vel > 127 ? 127 : vel);
 
-        //     usart.SendString(str);
-        // }
-        ;
+            vel = 0;
+        }
     }
 
     return EXIT_SUCCESS;

@@ -41,7 +41,7 @@ namespace DigitalIO
         usart().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
     }
 
-    constexpr void SendChar(char c)
+    constexpr void SendByte(char c)
     {
         while(!(usart().STATUS & USART_DREIF_bm))
         {
@@ -54,7 +54,7 @@ namespace DigitalIO
     {
         for(size_t i = 0; i < strlen(str); i++)
         {
-            SendChar(str[i]);
+            SendByte(str[i]);
         }
     }
 

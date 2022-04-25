@@ -37,7 +37,7 @@ namespace Module
                 {
                     trigTime = currentTime;
                     state = 1;
-                    return state;
+                    return 0;
                 }
 
             }
@@ -55,7 +55,7 @@ namespace Module
                     // USART0_sendChar(38);
                     // USART0_sendChar(vel > 127 ? 127 : vel); //);
                     state = 2;
-                    return state;
+                    return maxVelocity;
                 }
             }
 
@@ -66,12 +66,12 @@ namespace Module
                 {
                     state = 0;
                     maxVelocity = 0;
-                    return state;
+                    return 0;
                 }
                 
             }
 
-            return state;
+            return 0;
         }
 
         void SetTreshold(uint8_t t)
