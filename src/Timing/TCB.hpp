@@ -19,6 +19,12 @@ namespace Timing
 
     };
     
+    enum class TCBClock
+    {
+        Div1,
+        Div2,
+        TCA
+    };
 
     
     template <uint8_t nb>
@@ -31,14 +37,43 @@ namespace Timing
 
         static constexpr void EnableInterrupts()
         {
-            switch(nb)
+            tcb().INTCTRL =  TCB_CAPT_bm;
+        }
+
+        static constexpr void SetCompareOrCapture(uint16_t value)
+        {
+            tcb().CCMP = value;
+        }
+
+        static constexpr void Enable()
+        {
+            tcb().CTRLA |= TCB_ENABLE_bm;
+        }
+
+        template <TCBClock clock>
+        static constexpr void SetClock()
+        {
+            switch(clock)
             {
-                case 0: TCB0.INTCTRL =  TCB_CAPT_bm; break;
-                default: static_assert(nb <= 3, "Wrong TCB number.");
+                case TCBClock::Div1: tcb().CTRLA |= TCB_CLKSEL_CLKDIV1_gc; break;
+                case TCBClock::Div2: tcb().CTRLA |= TCB_CLKSEL_CLKDIV2_gc; break;
+                case TCBClock::TCA: tcb().CTRLA |= TCB_CLKSEL_CLKTCA_gc; break;
             }
         }
 
     private:
+
+        static constexpr auto& tcb()
+        {
+            switch(nb)
+            {
+                case 0: return TCB0;
+                case 1: return TCB1;
+                case 2: return TCB2;
+                case 3: return TCB3;
+                default: static_assert(nb <= 3, "Wrong TCB number.");
+            }
+        }
 
     };
     

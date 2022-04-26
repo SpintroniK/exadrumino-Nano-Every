@@ -83,15 +83,17 @@ int main()
     // Configure TCA
     Tca::SetSingleMode(Timing::TCASingleMode::Normal);
     Tca::DisableEventCounting();
-    Tca::SetPeriod(11);
+    Tca::SetPeriod(11); // 12 µs
 
     //TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;// | TCA_SINGLE_CMP0_bm;
     
-    TCA0.SINGLE.CTRLA = TCA_SINGLE_CLKSEL_DIV16_gc | TCA_SINGLE_ENABLE_bm;
+    TCA0.SINGLE.CTRLA |= TCA_SINGLE_CLKSEL_DIV16_gc;
+    TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
 
     Tcb::EnableInterrupts();
-    TCB0.CCMP = 999; 
-    TCB0.CTRLA |= TCB_CLKSEL_CLKTCA_gc | TCB_ENABLE_bm;
+    Tcb::SetCompareOrCapture(999); // 1'000 µs =  1 ms
+    Tcb::SetClock<Timing::TCBClock::TCA>();
+    Tcb::Enable();
 
 
     while(1)
