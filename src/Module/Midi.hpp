@@ -20,7 +20,7 @@ namespace Module
         }
 
         template <uint8_t channel>
-        inline void SendNote(uint8_t note, uint8_t velocity) const noexcept
+        inline void NoteOn(uint8_t note, uint8_t velocity) const noexcept
         {
             usart_.SendByte(0x90 | (channel & 0x0f));
             usart_.SendByte(note);

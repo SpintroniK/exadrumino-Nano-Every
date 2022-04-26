@@ -87,8 +87,10 @@ int main()
 
     //TCA0.SINGLE.INTCTRL = TCA_SINGLE_OVF_bm;// | TCA_SINGLE_CMP0_bm;
     
-    TCA0.SINGLE.CTRLA |= TCA_SINGLE_CLKSEL_DIV16_gc;
-    TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
+    // TCA0.SINGLE.CTRLA |= TCA_SINGLE_CLKSEL_DIV16_gc;
+    Tca::SetClockDivider<Timing::TCAClockDiv::Div16>();
+    Tca::Enable();
+    // TCA0.SINGLE.CTRLA |= TCA_SINGLE_ENABLE_bm;
 
     Tcb::EnableInterrupts();
     Tcb::SetCompareOrCapture(999); // 1'000 µs =  1 ms
@@ -100,7 +102,7 @@ int main()
     {
         if(vel >= 1)
         {
-            midi.SendNote<0>(38, vel > 127 ? 127 : vel);
+            midi.NoteOn<0>(38, vel > 127 ? 127 : vel);
 
             vel = 0;
         }

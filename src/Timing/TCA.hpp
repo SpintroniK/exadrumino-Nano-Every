@@ -35,6 +35,18 @@ namespace Timing
         DSBottom
     };
 
+    enum class TCAClockDiv
+    {
+        Div1,
+        Div2,
+        Div4,
+        Div8,
+        Div16,
+        Div64,
+        Div256,
+        Div1024
+    };
+
     template <typename Mode>
     class TCA
     {
@@ -53,14 +65,30 @@ namespace Timing
         {
             static_assert(Util::is_same_v<Mode, TCASingle>, "TCA should be in single mode.");
 
-            switch (mode)
+            switch(mode)
             {
-            case TCASingleMode::Normal:         tca().CTRLB = TCA_SINGLE_WGMODE_NORMAL_gc; break;
-            case TCASingleMode::Freq:           tca().CTRLB = TCA_SINGLE_WGMODE_FRQ_gc; break;
-            case TCASingleMode::SingleSlope:    tca().CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc; break;
-            case TCASingleMode::DSTop:          tca().CTRLB = TCA_SINGLE_WGMODE_DSTOP_gc; break;
-            case TCASingleMode::DSBoth:         tca().CTRLB = TCA_SINGLE_WGMODE_DSBOTH_gc; break;
-            case TCASingleMode::DSBottom:       tca().CTRLB = TCA_SINGLE_WGMODE_DSBOTTOM_gc; break;
+                case TCASingleMode::Normal:         tca().CTRLB = TCA_SINGLE_WGMODE_NORMAL_gc; break;
+                case TCASingleMode::Freq:           tca().CTRLB = TCA_SINGLE_WGMODE_FRQ_gc; break;
+                case TCASingleMode::SingleSlope:    tca().CTRLB = TCA_SINGLE_WGMODE_SINGLESLOPE_gc; break;
+                case TCASingleMode::DSTop:          tca().CTRLB = TCA_SINGLE_WGMODE_DSTOP_gc; break;
+                case TCASingleMode::DSBoth:         tca().CTRLB = TCA_SINGLE_WGMODE_DSBOTH_gc; break;
+                case TCASingleMode::DSBottom:       tca().CTRLB = TCA_SINGLE_WGMODE_DSBOTTOM_gc; break;
+            }
+        }
+
+        template <TCAClockDiv div>
+        static constexpr void SetClockDivider()
+        {
+            switch(div)
+            {
+                case TCAClockDiv::Div1: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV1_gc; break;
+                case TCAClockDiv::Div2: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV2_gc; break;
+                case TCAClockDiv::Div4: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV4_gc; break;
+                case TCAClockDiv::Div8: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV8_gc; break;
+                case TCAClockDiv::Div16: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV16_gc; break;
+                case TCAClockDiv::Div64: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV64_gc; break;
+                case TCAClockDiv::Div256: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV256_gc; break;
+                case TCAClockDiv::Div1024: tca().CTRLA |= TCA_SINGLE_CLKSEL_DIV1024_gc; break;
             }
         }
 
@@ -72,6 +100,11 @@ namespace Timing
         static constexpr void SetPeriod(uint16_t period)
         {
             tca().PER = period;
+        }
+
+        static constexpr void Enable()
+        {
+            tca().CTRLA |= TCA_SINGLE_ENABLE_bm;
         }
 
     private:
