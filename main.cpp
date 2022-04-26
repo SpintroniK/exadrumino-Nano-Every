@@ -1,5 +1,6 @@
 // #include <avr/iom4809.h>
 
+#include "src/Module/Midi.hpp"
 #include "src/Module/Trigger.hpp"
 #include "src/Nano.hpp"
 
@@ -11,7 +12,6 @@
 #include <stdlib.h>
 
 using Led = DigitalIO::Pin<DigitalIO::PORTE_ADDR, PIN2_bm>;
-
 using Usart3 = DigitalIO::Usart<3>;
 using Adc0 = Analog::Adc<Analog::Adc0Addr, Analog::Adc8bitType>;
 using Tca = Timing::TCA<Timing::TCASingle>;
@@ -58,6 +58,7 @@ int main()
 
     // Configure USART
     Usart3 usart{115'200};
+    Module::SerialMidi midi{usart};
 
 
     // PD3 => AIN3
@@ -93,14 +94,11 @@ int main()
     TCB0.CTRLA |= TCB_CLKSEL_CLKTCA_gc | TCB_ENABLE_bm;
 
 
-
     while(1)
     {
         if(vel >= 1)
         {
-            usart.SendByte(0x90);
-            usart.SendByte(38);
-            usart.SendByte(vel > 127 ? 127 : vel);
+            midi.SendNote<0>(38, vel > 127 ? 127 : vel);
 
             vel = 0;
         }

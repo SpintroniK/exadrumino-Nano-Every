@@ -41,7 +41,7 @@ namespace DigitalIO
         usart().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
     }
 
-    constexpr void SendByte(char c)
+    constexpr void SendByte(uint8_t c)
     {
         while(!(usart().STATUS & USART_DREIF_bm))
         {
@@ -50,13 +50,13 @@ namespace DigitalIO
         usart().TXDATAL = c;
     }
 
-    constexpr void SendString(char* str)
-    {
-        for(size_t i = 0; i < strlen(str); i++)
-        {
-            SendByte(str[i]);
-        }
-    }
+    // constexpr void SendString(char* str)
+    // {
+    //     for(size_t i = 0; i < strlen(str); i++)
+    //     {
+    //         SendByte(str[i]);
+    //     }
+    // }
 
     static constexpr uint16_t BaudRate(uint32_t baudRate)
     {
