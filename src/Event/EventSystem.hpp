@@ -4,11 +4,14 @@
 
 #include <stdint.h>
 
+inline constexpr uint8_t EVSYS_GENERATOR_TCA0_OVF_gc = 0x80 << 0; // Should already be defined, but it's not...
+
 namespace Event
 {
 
     using Generator = uint8_t;
     using Event = register8_t;
+
 
     class EventSystem
     {

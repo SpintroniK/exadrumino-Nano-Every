@@ -14,13 +14,13 @@ namespace Module
         Trigger() = default;
         ~Trigger() = default;
 
-        Trigger(uint8_t thresh, uint8_t scan, uint8_t mask)
-        : threshold{thresh}, scanTime{scan}, maskTime{mask}
+        Trigger(uint8_t thresh, uint8_t scan, uint8_t mask, uint8_t note)
+        : threshold{thresh}, scanTime{scan}, maskTime{mask}, midiNote{note}
         {
             
         }
 
-        uint8_t Process(uint8_t value, uint8_t currentTime)
+        uint8_t Process(uint8_t value, uint8_t currentTime) noexcept
         {
             acc   -= prevX;
             prevX = static_cast<int16_t>(value) << 7;
@@ -50,10 +50,6 @@ namespace Module
                 if(static_cast<int8_t>(delta) <= 0)
                 {
                     const uint8_t vel = maxVelocity; // HACK
-
-                    // USART0_sendChar(0x90);
-                    // USART0_sendChar(38);
-                    // USART0_sendChar(vel > 127 ? 127 : vel); //);
                     state = 2;
                     return maxVelocity;
                 }
@@ -72,6 +68,16 @@ namespace Module
             }
 
             return 0;
+        }
+
+        auto GetVelocity() const noexcept
+        {
+            return maxVelocity;
+        }
+
+        auto GetMidiNote() const noexcept
+        {
+            return midiNote;
         }
 
         void SetTreshold(uint8_t t)
@@ -106,6 +112,8 @@ namespace Module
         uint8_t scanTime{};
         uint8_t maskTime{};
 
+        // MIDI
+        uint8_t midiNote{};
     };
 
 } // namespace Module
