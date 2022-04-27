@@ -40,6 +40,11 @@ namespace Timing
             tcb().INTCTRL =  TCB_CAPT_bm;
         }
 
+        static constexpr void ResetInterrupt()
+        {
+            tcb().INTFLAGS |= TCB_CAPT_bm;
+        }
+
         static constexpr void SetCompareOrCapture(uint16_t value)
         {
             tcb().CCMP = value;

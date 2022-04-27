@@ -26,11 +26,23 @@ namespace Analog
         static void ResReady() __asm__("__vector_22") __attribute__((__signal__, __used__, __externally_visible__));
     };
 
-    enum class Vref
+    enum class Vref : uint8_t
     {
         External,
         Internal, 
         Vdd,
+    };
+
+    enum class Prescaler : uint8_t
+    {
+        Div2,
+        Div4,
+        Div8,
+        Div16,
+        Div32,
+        Div64,
+        Div128,
+        Div256
     };
 
     template <typename T, typename Enable = void>
@@ -90,26 +102,26 @@ namespace Analog
             adc().EVCTRL |= ADC_STARTEI_bm;
         }
 
-        template <uint16_t div>
-        static constexpr void SetDivider()
+        template <Prescaler div>
+        static constexpr void SetPrescaler()
         {
             switch(div)
             {
-                case 2:   adc().CTRLC |= ADC_PRESC_DIV2_gc; break;
-                case 4:   adc().CTRLC |= ADC_PRESC_DIV4_gc; break;
-                case 8:   adc().CTRLC |= ADC_PRESC_DIV8_gc; break;
-                case 16:  adc().CTRLC |= ADC_PRESC_DIV16_gc; break;
-                case 32:  adc().CTRLC |= ADC_PRESC_DIV32_gc; break;
-                case 64:  adc().CTRLC |= ADC_PRESC_DIV64_gc; break;
-                case 128: adc().CTRLC |= ADC_PRESC_DIV128_gc; break;
-                case 256: adc().CTRLC |= ADC_PRESC_DIV256_gc; break;
-                default: static_assert(div % 2 == 0 && div >= 2 && div <= 256, "Invalid ADC prescaler.");
+                case Prescaler::Div2:   adc().CTRLC |= ADC_PRESC_DIV2_gc; break;
+                case Prescaler::Div4:   adc().CTRLC |= ADC_PRESC_DIV4_gc; break;
+                case Prescaler::Div8:   adc().CTRLC |= ADC_PRESC_DIV8_gc; break;
+                case Prescaler::Div16:  adc().CTRLC |= ADC_PRESC_DIV16_gc; break;
+                case Prescaler::Div32:  adc().CTRLC |= ADC_PRESC_DIV32_gc; break;
+                case Prescaler::Div64:  adc().CTRLC |= ADC_PRESC_DIV64_gc; break;
+                case Prescaler::Div128: adc().CTRLC |= ADC_PRESC_DIV128_gc; break;
+                case Prescaler::Div256: adc().CTRLC |= ADC_PRESC_DIV256_gc; break;
             }
         }
 
-        static constexpr void SetReference(Vref vref)
+        template <Vref vref>
+        static constexpr void SetReference()
         {
-            switch (vref)
+            switch(vref)
             {
                 case Vref::External: adc().CTRLC |= ADC_REFSEL_VREFA_gc; break;
                 case Vref::Internal: adc().CTRLC |= ADC_REFSEL_INTREF_gc; break;

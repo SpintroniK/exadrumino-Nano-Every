@@ -25,7 +25,7 @@ namespace Timing
         static void Overflow() __asm__("__vector_7") __attribute__((__signal__, __used__, __externally_visible__));
     };
 
-    enum class TCASingleMode
+    enum class TCASingleMode : uint8_t
     {
         Normal,
         Freq,
@@ -35,7 +35,7 @@ namespace Timing
         DSBottom
     };
 
-    enum class TCAClockDiv
+    enum class TCAClockDiv : uint8_t
     {
         Div1,
         Div2,
@@ -61,7 +61,8 @@ namespace Timing
             tca().INTFLAGS |= TCA_SINGLE_OVF_bm;
         }
 
-        static constexpr void SetSingleMode(TCASingleMode mode)
+        template <TCASingleMode mode>
+        static constexpr void SetSingleMode()
         {
             static_assert(Util::is_same_v<Mode, TCASingle>, "TCA should be in single mode.");
 
