@@ -22,8 +22,11 @@ Timing::Counter<uint8_t> clock{};
 
 void Analog::AdcInterrupts::ResReady()
 {
+    // Led::SetHigh();
     Adc0::ResetInterrupt();
     brain.Process(ADC0.RES, clock.GetCount());
+    Adc0::SelectChannel(brain.NextChannel());
+    // Led::SetLow();
 }
 
 void Timing::TCBInterrupts::TCB0Overflow()
@@ -55,7 +58,7 @@ int main()
     // Configure TCA
     Tca::SetSingleMode<Timing::TCASingleMode::Normal>();
     Tca::DisableEventCounting();
-    Tca::SetPeriod(11);             // 12 µs
+    Tca::SetPeriod(13);             // 14 µs
 
     
     Tca::SetClockDivider<Timing::TCAClockDiv::Div16>();
