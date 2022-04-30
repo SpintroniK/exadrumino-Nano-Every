@@ -17,7 +17,7 @@ namespace DigitalIO
     {
     public:
 
-    constexpr Usart(uint32_t br)
+    constexpr explicit Usart(uint32_t br)
     {
         switch(N)
         {
