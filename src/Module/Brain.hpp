@@ -12,7 +12,23 @@ namespace Module
     using Adc0 = Analog::Adc<Analog::Adc0Addr, Analog::Adc8bitType>;
 
     static Usart3 usart{115'200};
-    static Module::SerialMidi midi{usart};    
+    static Module::SerialMidi midi{usart};
+
+    inline constexpr auto kickChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN3_gc;
+    inline constexpr auto snareChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN2_gc;
+    inline constexpr auto hiHatChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN1_gc;
+    inline constexpr auto crashChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN12_gc;
+    inline constexpr auto tomTomChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN13_gc;
+    inline constexpr auto floorTomChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN4_gc;
+    inline constexpr auto rideChannel = ADC_MUXPOS_t::ADC_MUXPOS_AIN5_gc;
+
+    inline constexpr uint8_t kickNote = 36;
+    inline constexpr uint8_t snareNote = 38;
+    inline constexpr uint8_t hiHatNote = 42; // closed => 42, open => 46, semi-open => 52
+    inline constexpr uint8_t crashNote = 49;
+    inline constexpr uint8_t tomTomNote = 45;
+    inline constexpr uint8_t floorTomNote = 41;
+    inline constexpr uint8_t rideNote = 48;
 
     class Brain
     {        
@@ -56,13 +72,13 @@ namespace Module
 
         Trigger triggers[nbTriggers] = 
         {
-            Trigger{3, 4, 40, 37, ADC_MUXPOS_t::ADC_MUXPOS_AIN3_gc}, 
-            Trigger{3, 4, 40, 38, ADC_MUXPOS_t::ADC_MUXPOS_AIN2_gc},
-            Trigger{3, 4, 40, 39, ADC_MUXPOS_t::ADC_MUXPOS_AIN1_gc},
-            Trigger{3, 4, 40, 41, ADC_MUXPOS_t::ADC_MUXPOS_AIN12_gc},
-            Trigger{3, 4, 40, 36, ADC_MUXPOS_t::ADC_MUXPOS_AIN13_gc},
-            Trigger{3, 4, 40, 42, ADC_MUXPOS_t::ADC_MUXPOS_AIN4_gc},
-            Trigger{3, 4, 40, 43, ADC_MUXPOS_t::ADC_MUXPOS_AIN5_gc},
+            Trigger{3, 4, 40, kickNote, kickChannel}, 
+            Trigger{3, 4, 40, snareNote, snareChannel},
+            Trigger{6, 4, 40, hiHatNote, hiHatChannel},
+            Trigger{3, 4, 40, crashNote, crashChannel},
+            Trigger{3, 4, 40, tomTomNote, tomTomChannel},
+            Trigger{3, 4, 40, floorTomNote, floorTomChannel},
+            Trigger{3, 4, 40, rideNote, rideChannel},
         };
 
         uint8_t trigVelocities[nbTriggers]{};
