@@ -2,6 +2,7 @@
 
 #include "../Analog/Adc.hpp"
 #include "../DigitalIO/Usart.hpp"
+#include "Instruments/Pad.hpp"
 #include "Midi.hpp"
 #include "Trigger.hpp"
 
@@ -40,26 +41,26 @@ namespace Module
 
         inline void Process(uint8_t value, uint8_t currentTime)
         {
-            triggers[prevTriggerIndex].Process(value, currentTime);
+            pads[prevTriggerIndex].Process(value, currentTime);
         }
 
         inline auto NextChannel()
         {
             prevTriggerIndex = triggerIndex;
-            triggerIndex = (triggerIndex + 1) % nbTriggers;
-            return triggers[triggerIndex].GetChannel();
+            triggerIndex = (triggerIndex + 1) % nbPads;
+            return pads[triggerIndex].GetChannel();
         }
 
         void SendMidiNotes()
         {
 
-            for(uint8_t i = 0; i < nbTriggers; ++i)
+            for(uint8_t i = 0; i < nbPads; ++i)
             {
-                const auto velocity = triggers[i].GetVelocity();
+                const auto velocity = pads[i].GetVelocity();
                 if(velocity > 0)
                 {
-                    midi.NoteOn<MidiChannel>(triggers[i].GetMidiNote(), velocity);
-                    triggers[i].Reset();
+                    midi.NoteOn<MidiChannel>(pads[i].GetMidiNote(), velocity);
+                    pads[i].Reset();
                 }
             }
         }
@@ -67,17 +68,17 @@ namespace Module
     private:
 
         static constexpr uint8_t MidiChannel = 10;
-        static constexpr uint8_t nbTriggers = 7;
+        static constexpr uint8_t nbPads = 7;
 
-        Trigger triggers[nbTriggers] = 
+        Pad pads[nbPads] = 
         {
-            Trigger{3, 4, 40, kickNote, kickChannel}, 
-            Trigger{3, 4, 40, snareNote, snareChannel},
-            Trigger{6, 4, 40, hiHatNote, hiHatChannel},
-            Trigger{3, 4, 40, crashNote, crashChannel},
-            Trigger{3, 4, 40, tomTomNote, tomTomChannel},
-            Trigger{3, 4, 40, floorTomNote, floorTomChannel},
-            Trigger{3, 4, 40, rideNote, rideChannel},
+            Pad{{3, 4, 40, kickChannel}, kickNote}, 
+            Pad{{3, 4, 40, snareChannel}, snareNote},
+            Pad{{6, 4, 40, hiHatChannel}, hiHatNote},
+            Pad{{3, 4, 40, crashChannel}, crashNote},
+            Pad{{3, 4, 40, tomTomChannel}, tomTomNote},
+            Pad{{3, 4, 40, floorTomChannel}, floorTomNote},
+            Pad{{3, 4, 40, rideChannel}, rideNote},
         };
 
         uint8_t triggerIndex{1};

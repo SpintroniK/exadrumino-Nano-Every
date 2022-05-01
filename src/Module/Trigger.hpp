@@ -1,5 +1,7 @@
 #pragma once
 
+#include <avr/io.h>
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -14,13 +16,13 @@ namespace Module
         Trigger() = default;
         ~Trigger() = default;
 
-        Trigger(uint8_t thresh, uint8_t scan, uint8_t mask, uint8_t note, ADC_MUXPOS_t channel)
-        : threshold{thresh}, scanTime{scan}, maskTime{mask}, midiNote{note}, adcChannel{channel}
+        Trigger(uint8_t thresh, uint8_t scan, uint8_t mask, ADC_MUXPOS_t channel)
+        : threshold{thresh}, scanTime{scan}, maskTime{mask}, adcChannel{channel}
         {
             
         }
 
-        uint8_t Process(uint8_t value, uint8_t currentTime) noexcept
+        void Process(uint8_t value, uint8_t currentTime) noexcept
         {
             acc   -= prevX;
             prevX = static_cast<int16_t>(value) << 7;
@@ -37,7 +39,7 @@ namespace Module
                 {
                     trigTime = currentTime;
                     state = 1;
-                    return 0;
+                    return;
                 }
             }
 
@@ -51,7 +53,7 @@ namespace Module
                 {
                     state = 2;
                     trigVelocity = maxVelocity;
-                    return maxVelocity;
+                    return;
                 }
             }
 
@@ -62,11 +64,11 @@ namespace Module
                 {
                     state = 0;
                     maxVelocity = 0;
-                    return 0;
+                    return;
                 }
             }
 
-            return 0;
+            return;
         }
 
         auto GetChannel() const noexcept
@@ -77,11 +79,6 @@ namespace Module
         auto GetVelocity() const noexcept
         {
             return trigVelocity;
-        }
-
-        auto GetMidiNote() const noexcept
-        {
-            return midiNote;
         }
 
         void Reset() noexcept
@@ -121,9 +118,6 @@ namespace Module
         uint8_t threshold{};
         uint8_t scanTime{};
         uint8_t maskTime{};
-
-        // MIDI
-        const uint8_t midiNote{};
 
         // ADC
         const ADC_MUXPOS_t adcChannel{};
