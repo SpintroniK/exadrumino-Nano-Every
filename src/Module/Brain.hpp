@@ -40,8 +40,7 @@ namespace Module
 
         inline void Process(uint8_t value, uint8_t currentTime)
         {
-            const auto triggerVelocity = triggers[prevTriggerIndex].Process(value, currentTime);
-            trigVelocities[prevTriggerIndex] = triggerVelocity > 0 ? triggerVelocity : 0;
+            triggers[prevTriggerIndex].Process(value, currentTime);
         }
 
         inline auto NextChannel()
@@ -81,7 +80,6 @@ namespace Module
             Trigger{3, 4, 40, rideNote, rideChannel},
         };
 
-        uint8_t trigVelocities[nbTriggers]{};
         uint8_t triggerIndex{1};
         uint8_t prevTriggerIndex{0};
     
