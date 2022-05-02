@@ -13,7 +13,7 @@ namespace Module
 
     public:
 
-        Trigger() = default;
+        Trigger() = delete;
         ~Trigger() = default;
 
         Trigger(uint8_t thresh, uint8_t scan, uint8_t mask, ADC_MUXPOS_t channel)
@@ -120,7 +120,7 @@ namespace Module
         uint8_t maskTime{};
 
         // ADC
-        const ADC_MUXPOS_t adcChannel{};
+        ADC_MUXPOS_t adcChannel{};
     };
 
 } // namespace Module
