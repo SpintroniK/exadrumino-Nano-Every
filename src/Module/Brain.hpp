@@ -89,6 +89,14 @@ namespace Module
                 hihat.Reset();
             }
 
+            // HiHat controller
+            const auto controlChange = hihat.GetControlChange();
+
+            if(controlChange > 0)
+            {
+                midi.ControlChange<MidiChannel, 4>(controlChange);
+            }
+
             // Pads
             for(uint8_t i = 0; i < nbPads; ++i)
             {

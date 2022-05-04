@@ -27,6 +27,23 @@ namespace Module
             {
                 state = 0;
             }
+            
+
+            if(::abs(prevValue - value) > 2)
+            {
+                controlChange = value >> 1;
+            }
+            else
+            {
+                controlChange = 0;
+            }
+
+            prevValue = value;
+        }
+
+        auto GetControlChange() const noexcept
+        {
+            return controlChange;
         }
 
         auto GetChannel() const noexcept
@@ -43,6 +60,8 @@ namespace Module
 
         ADC_MUXPOS_t adcChannel{};
         uint8_t state{0}; // 0 => closed / 1 => open
+        uint8_t prevValue{};
+        uint8_t controlChange{};
 
     };
 

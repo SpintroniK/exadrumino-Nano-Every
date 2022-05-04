@@ -31,17 +31,20 @@ namespace Module
             controller.Process(value, currentTime);
         }
 
+        auto GetControlChange() const noexcept
+        {
+            return controller.GetControlChange();
+        }
+
         auto GetMidiNote() const noexcept
         {
             return controller.GetState() == 0 ? midiNoteClosed : midiNoteOpen;
         }
 
-
         auto GetVelocity() const noexcept
         {
             return trigger.GetVelocity();
         }
-
 
         void Reset() noexcept
         {

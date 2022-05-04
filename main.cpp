@@ -45,7 +45,7 @@ int main()
     // Configure ADC
     Adc0::EnableInterrupts();
     Adc0::EnableEvents();
-    Adc0::SelectChannel(ADC_MUXPOS_AIN2_gc);
+    Adc0::SelectChannel(ADC_MUXPOS_AIN0_gc);
     Adc0::SetPrescaler<Analog::Prescaler::Div8>();
     Adc0::SetReference<Analog::Vref::External>();
     Adc0::Enable();
