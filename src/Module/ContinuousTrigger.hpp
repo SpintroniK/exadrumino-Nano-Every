@@ -28,17 +28,18 @@ namespace Module
                 state = 0;
             }
             
+            const uint8_t sampledValue = value >> 5;
 
-            if(::abs(prevValue - value) > 2)
+            if(sampledValue != prevValue)
             {
-                controlChange = value >> 1;
+                controlChange = (sampledValue << 4) - 15;
             }
             else
             {
                 controlChange = 0;
             }
-
-            prevValue = value;
+            
+            prevValue = sampledValue;
         }
 
         auto GetControlChange() const noexcept
@@ -55,6 +56,7 @@ namespace Module
         {
             return state;
         }
+
 
     private:
 
