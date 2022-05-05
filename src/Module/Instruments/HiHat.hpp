@@ -11,10 +11,10 @@ namespace Module
     {
 
     public:
-        HiHat(Trigger&& t, ContinuousTrigger&& ct, uint8_t noteOpen, uint8_t noteClosed)
+        HiHat(Trigger&& t, ContinuousTrigger&& ct, uint8_t noteOpen, uint8_t noteClosed, uint8_t pedalNote)
         : trigger{static_cast<Trigger&&>(t)}, 
         controller{static_cast<ContinuousTrigger&&>(ct)}, 
-        midiNoteOpen{noteOpen}, midiNoteClosed{noteClosed}
+        midiNoteOpen{noteOpen}, midiNoteClosed{noteClosed}, midiNotePedal{pedalNote}
         {
 
         }
@@ -67,7 +67,7 @@ namespace Module
         ContinuousTrigger controller;
         uint8_t midiNoteOpen;
         uint8_t midiNoteClosed;
-        uint8_t midiNote;
+        uint8_t midiNotePedal;
     };
     
 } // namespace Modul

@@ -19,13 +19,13 @@ namespace Module
 
         void Process(uint8_t value, uint8_t currentTime)
         {
-            if(value > 200)
+            if(value < 16)
             {
-                state = 1;
+                state = 0;
             }
             else
             {
-                state = 0;
+                state = 1;
             }
             
             const uint8_t sampledValue = value >> 5;

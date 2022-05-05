@@ -129,7 +129,7 @@ namespace Module
             Pad{{3, 4, 40, rideChannel}, rideNote},
         };
 
-        HiHat hihat{{6, 4, 40, hiHatChannel}, {hiHatCtrlChannel}, 42, 46};
+        HiHat hihat{{6, 4, 40, hiHatChannel}, {hiHatCtrlChannel}, 42, 46, 44};
 
         uint8_t triggerIndex{1};
         uint8_t prevTriggerIndex{0};
