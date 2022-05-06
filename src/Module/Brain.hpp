@@ -92,9 +92,18 @@ namespace Module
             // HiHat controller
             const auto controlChange = hihat.GetControlChange();
 
-            if(controlChange > 0)
+            if(controlChange != 0xff)
             {
                 midi.ControlChange<MidiChannel, 4>(controlChange);
+            }
+
+            // HiHat controller trig
+            const auto pedalVelocity = hihat.GetPedalVelocity();
+
+            if(pedalVelocity > 0)
+            {
+                midi.NoteOn<MidiChannel>(hihat.GetPedalNote(), pedalVelocity);
+                hihat.ResetPedal();
             }
 
             // Pads
@@ -129,7 +138,7 @@ namespace Module
             Pad{{3, 4, 40, rideChannel}, rideNote},
         };
 
-        HiHat hihat{{6, 4, 40, hiHatChannel}, {hiHatCtrlChannel}, 42, 46, 44};
+        HiHat hihat{{6, 4, 40, hiHatChannel}, {hiHatCtrlChannel, 100}, 42, 46, 44};
 
         uint8_t triggerIndex{1};
         uint8_t prevTriggerIndex{0};

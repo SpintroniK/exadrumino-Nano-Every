@@ -38,7 +38,12 @@ namespace Module
 
         auto GetMidiNote() const noexcept
         {
-            return controller.GetState() == 0 ? midiNoteClosed : midiNoteOpen;
+            return controller.GetCurrentState() == 0 ? midiNoteClosed : midiNoteOpen;
+        }
+
+        auto GetPedalNote() const noexcept
+        {
+            return midiNotePedal;
         }
 
         auto GetVelocity() const noexcept
@@ -46,9 +51,19 @@ namespace Module
             return trigger.GetVelocity();
         }
 
+        auto GetPedalVelocity() const noexcept
+        {
+            return controller.GetTrigVelocity();
+        }
+
         void Reset() noexcept
         {
             trigger.Reset();
+        }
+
+        void ResetPedal() noexcept
+        {
+            controller.Reset();
         }
 
         auto GetTriggerChannel() const noexcept
