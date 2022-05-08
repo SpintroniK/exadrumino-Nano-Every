@@ -19,46 +19,38 @@ namespace Module
 
         void Process(uint8_t value, uint8_t currentTime)
         {
-            if(value < threshold && state != 1)
+
+
+            if(value < threshold && state == 0)
             {
                 state = 1;
                 trigTime = currentTime;
                 trigValue = value;
             }
-
-            switch(state)
+            
+            if(value >= threshold && state > 1)
             {
-                case 0:
-                {
-
-                    break;
-                };
-                case 1:
-                {
-
-                    const uint8_t delta = trigTime + scanTime - currentTime;
-
-                    if(static_cast<int8_t>(delta) > 0)
-                    {
-                        break;
-                    }
-
-                    const uint8_t velocity = trigValue - value;
-
-                    if(velocity > velocityThresh && value < trigValue)
-                    {
-                        trigVelocity = velocity > 127 ? 127 : velocity;
-                    }
-
-                    state = 0;
-                    break;
-                };
-                
-                default:
-                    break;
+                state = 0;
+                trigTime = 0;
+                trigValue = 0;
             }
 
-            
+            if(state == 1)
+            {
+                const uint8_t delta = trigTime + scanTime - currentTime;
+
+                if(static_cast<int8_t>(delta) < 0)
+                {
+                    state = 2;
+                    if(value < trigValue - velocityThresh)
+                    {
+                        const uint8_t velocity = trigValue - value;
+                        trigVelocity = velocity > 127 ? 127 : velocity;
+                        state = 3;
+                    }
+                }
+            }
+
             const uint8_t sampledValue = value >> 5;
 
             if(sampledValue != prevCCValue)
@@ -105,9 +97,9 @@ namespace Module
         uint8_t prevCCValue{};
         uint8_t controlChange{};
 
-        uint8_t threshold{210};
+        uint8_t threshold{160};
         uint8_t scanTime{50};
-        int8_t velocityThresh{20};
+        uint8_t velocityThresh{80};
         uint8_t trigVelocity{0};
 
         uint8_t state{0}; // 0 => rest / 1 => trig

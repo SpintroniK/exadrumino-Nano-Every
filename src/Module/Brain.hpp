@@ -133,12 +133,12 @@ namespace Module
             Pad{{3, 4, 40, kickChannel}, kickNote}, 
             Pad{{3, 4, 40, snareChannel}, snareNote},
             Pad{{3, 4, 40, crashChannel}, crashNote},
-            Pad{{3, 4, 40, tomTomChannel}, tomTomNote},
-            Pad{{3, 4, 40, floorTomChannel}, floorTomNote},
+            Pad{{2, 4, 40, tomTomChannel}, tomTomNote},
+            Pad{{2, 4, 40, floorTomChannel}, floorTomNote},
             Pad{{3, 4, 40, rideChannel}, rideNote},
         };
 
-        HiHat hihat{{6, 4, 40, hiHatChannel}, {hiHatCtrlChannel, 100}, 42, 46, 44};
+        HiHat hihat{{12, 4, 40, hiHatChannel}, {hiHatCtrlChannel, 100}, 42, 42, 44};
 
         uint8_t triggerIndex{1};
         uint8_t prevTriggerIndex{0};
