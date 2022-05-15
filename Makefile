@@ -16,7 +16,7 @@ all:
 
 upload:
 	python3 ./reset.py ${PORT}
-	${AVRDUDE} -C${CONFDIR} -v -patmega4809 -cjtag2updi -P${PORT} -b115200 -e -D -Uflash:w:main.hex:i -Ufuse2:w:0x01:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
+	${AVRDUDE} -C${CONFDIR} -v -patmega4809 -cjtag2updi -P${PORT} -b115200 -e -D -Uflash:w:main.hex:i -Ueeprom:w:main.eep -Ufuse2:w:0x01:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
 
 
 clean:
