@@ -11,8 +11,8 @@ namespace Module
         ContinuousTrigger() = delete;
         ~ContinuousTrigger() = default;
 
-        ContinuousTrigger(ADC_MUXPOS_t channel, uint8_t tScan)
-        : adcChannel{channel}, scanTime{tScan}
+        ContinuousTrigger(ADC_MUXPOS_t channel, uint8_t tScan, uint8_t thresh, uint8_t vThresh)
+        : adcChannel{channel}, scanTime{tScan}, threshold{thresh}, velocityThresh{vThresh}
         {
 
         }
@@ -97,9 +97,9 @@ namespace Module
         uint8_t prevCCValue{};
         uint8_t controlChange{};
 
-        uint8_t threshold{160};
-        uint8_t scanTime{50};
-        uint8_t velocityThresh{80};
+        uint8_t scanTime;
+        uint8_t threshold;
+        uint8_t velocityThresh;
         uint8_t trigVelocity{0};
 
         uint8_t state{0}; // 0 => rest / 1 => trig
