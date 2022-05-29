@@ -1,4 +1,5 @@
 #include "src/Module/Brain.hpp"
+#include "src/Commands/Parser.hpp"
 #include "src/Nano.hpp"
 
 #include <avr/io.h>
@@ -6,17 +7,25 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 using Led = DigitalIO::Pin<DigitalIO::PORTE_ADDR, PIN2_bm>;
 using Adc0 = Analog::Adc<Analog::Adc0Addr, Analog::Adc8bitType>;
 using Tca = Timing::TCA<Timing::TCASingle>;
 using Tcb = Timing::TCB<0>;
 
-
 Module::Brain brain{};
 
-Timing::Counter<uint8_t> clock{};
+volatile const uint8_t EEMEM _kickThreshold = 3;
+volatile const uint8_t EEMEM _kickScanTime = 4;
+volatile const uint8_t EEMEM _kickMaskTime = 40;
 
+auto kickThreshold = Memory::EEPromValue{&_kickThreshold};
+auto kickScanTime = Memory::EEPromValue{&_kickScanTime};
+auto kickMaskTime = Memory::EEPromValue{&_kickMaskTime};
+
+
+Timing::Counter<uint8_t> clock{};
 
 void Analog::AdcInterrupts::ResReady()
 {
@@ -33,10 +42,46 @@ void Timing::TCBInterrupts::TCB0Overflow()
     clock.Increment();
 }
 
+Commands::Parser parser;
+
+void DigitalIO::UsartInterrupts::ReceivedWord()
+{
+    Module::usart.ResetInterrupt();
+
+    // Read incoming byte
+    const auto b = Module::usart.ReadByte();
+
+    parser.Parse(b);
+    const auto command = parser.PopCommand();
+
+    if(command)
+    {
+        // char str[16]{};
+        // ::sprintf(str, "%d\n", command->type);
+        // for(uint8_t i = 0; i < ::strlen(str); ++i)
+        // {
+        //     Module::usart.SendByte(str[i]);
+        // }
+        const auto v = command->args.arg2;
+        kickThreshold = v;
+
+        brain.SetPadTriggerSettings<Module::iSnare>(kickThreshold, kickScanTime, kickMaskTime);
+    }
+}
+
 int main()
 {
 
     _PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, 0x00); // Disable prescaler
+
+    // Module set-up
+
+    brain.SetPadTriggerSettings<Module::iKick>(kickThreshold, kickScanTime, kickMaskTime);
+    brain.SetPadTriggerSettings<Module::iSnare>(kickThreshold, kickScanTime, kickMaskTime);
+    brain.SetPadTriggerSettings<Module::iCrash>(kickThreshold, kickScanTime, kickMaskTime);
+    brain.SetPadTriggerSettings<Module::iTom>(kickThreshold, kickScanTime, kickMaskTime);
+    brain.SetPadTriggerSettings<Module::iFloorTom>(kickThreshold, kickScanTime, kickMaskTime);
+    brain.SetPadTriggerSettings<Module::iRide>(kickThreshold, kickScanTime, kickMaskTime);
 
     sei();
 
@@ -75,4 +120,3 @@ int main()
 
     return EXIT_SUCCESS;
 }
-
