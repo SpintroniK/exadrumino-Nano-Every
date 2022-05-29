@@ -5,17 +5,23 @@
 
 namespace Module
 {
+   
+
     class Pad : public Instrument
     {
         
     public:
-        Pad(Trigger&& t, uint8_t note) 
-        : trigger{static_cast<Trigger&&>(t)}, midiNote{note}
+        Pad(uint8_t note) : midiNote{note}
         {
 
         }
 
         ~Pad() = default;
+
+        void SetTrigger(const Trigger& t)
+        {
+            trigger = t;
+        }
 
         void Process(uint8_t value, uint8_t currentTime) noexcept
         {

@@ -33,6 +33,15 @@ namespace Module
     inline constexpr uint8_t floorTomNote = 41;
     inline constexpr uint8_t rideNote = 48;
 
+    inline constexpr uint8_t iKick = 0;
+    inline constexpr uint8_t iSnare = 1;
+    inline constexpr uint8_t iCrash = 2;
+    inline constexpr uint8_t iTom = 3;
+    inline constexpr uint8_t iFloorTom = 4;
+    inline constexpr uint8_t iRide = 5;
+
+    using TriggerParam = Memory::EEPromValue<ParamType>;
+
     class Brain
     {        
 
@@ -40,6 +49,14 @@ namespace Module
         Brain() = default;
         ~Brain() = default;
 
+
+        template <uint8_t i>
+        void SetPadTriggerSettings(uint8_t threshold, uint8_t scanTime, uint8_t maskTime)
+        {
+            static_assert(i < nbPads, "Error Pad index out of range.");
+            
+            pads[i].SetTrigger({threshold, scanTime, maskTime, channels[i]});
+        }
 
         inline void Process(uint8_t value, uint8_t currentTime)
         {
@@ -85,7 +102,7 @@ namespace Module
 
             if(hiHatVelocity > 0)
             {
-                midi.NoteOn<MidiChannel>(hihat.GetMidiNote(), hiHatVelocity);
+                //midi.NoteOn<MidiChannel>(hihat.GetMidiNote(), hiHatVelocity);
                 hihat.Reset();
             }
 
@@ -102,7 +119,7 @@ namespace Module
 
             if(pedalVelocity > 0)
             {
-                midi.NoteOn<MidiChannel>(hihat.GetPedalNote(), pedalVelocity);
+                //midi.NoteOn<MidiChannel>(hihat.GetPedalNote(), pedalVelocity);
                 hihat.ResetPedal();
             }
 
@@ -120,7 +137,7 @@ namespace Module
 
     private:
 
-        static constexpr uint8_t MidiChannel = 10;
+        static constexpr uint8_t MidiChannel = 9;
         static constexpr uint8_t nbPads = 6;
 
         static constexpr uint8_t hiHatIndex = nbPads;
@@ -128,17 +145,31 @@ namespace Module
         static constexpr uint8_t nbInstruments = hiHatCtrlIndex + 1;
 
 
-        Pad pads[nbPads] = 
+        static constexpr decltype(kickChannel) channels[nbPads] = 
         {
-            Pad{{3, 4, 40, kickChannel}, kickNote}, 
-            Pad{{3, 4, 40, snareChannel}, snareNote},
-            Pad{{3, 4, 40, crashChannel}, crashNote},
-            Pad{{2, 4, 40, tomTomChannel}, tomTomNote},
-            Pad{{2, 4, 40, floorTomChannel}, floorTomNote},
-            Pad{{3, 4, 40, rideChannel}, rideNote},
+            kickChannel, 
+            snareChannel, 
+            crashChannel, 
+            tomTomChannel, 
+            floorTomChannel, 
+            rideChannel
         };
 
-        HiHat hihat{{12, 4, 40, hiHatChannel}, {hiHatCtrlChannel, 50, 160, 80}, 42, 42, 44};
+
+        Pad pads[nbPads] = 
+        {
+            Pad{kickNote}, 
+            Pad{snareNote},
+            Pad{crashNote},
+            Pad{tomTomNote},
+            Pad{floorTomNote},
+            Pad{rideNote},
+        };
+
+        HiHat hihat
+        { 
+            {hiHatCtrlChannel, 50, 160, 80}, 42, 42, 44
+        };
 
         uint8_t triggerIndex{1};
         uint8_t prevTriggerIndex{0};

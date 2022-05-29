@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Memory/EEProm.hpp"
+
 #include <avr/io.h>
 
 #include <stdint.h>
@@ -7,19 +9,63 @@
 
 namespace Module
 {
+    using ParamType = uint8_t;
+    using TriggerParam = Memory::EEPromValue<ParamType>;
+
+    struct TriggerSettings
+    {        
+
+        TriggerSettings(const TriggerParam& threshold, const TriggerParam& scanTime, const TriggerParam& maskTime)
+        : threshold{threshold}, scanTime{scanTime}, maskTime{maskTime}
+        {
+
+        }
+
+        TriggerParam threshold;
+        TriggerParam scanTime;
+        TriggerParam maskTime;
+
+    };
+    
     
     class Trigger
     {
 
     public:
 
-        Trigger() = delete;
+        Trigger() = default;
         ~Trigger() = default;
 
         Trigger(uint8_t thresh, uint8_t scan, uint8_t mask, ADC_MUXPOS_t channel)
         : threshold{thresh}, scanTime{scan}, maskTime{mask}, adcChannel{channel}
         {
             
+        }
+
+        Trigger(const Trigger& other)
+        {
+            threshold = other.threshold;
+            scanTime = other.scanTime;
+            maskTime = other.maskTime;
+            adcChannel = other.adcChannel;
+        }
+
+        Trigger(Trigger&& other)
+        {
+            threshold = other.threshold;
+            scanTime = other.scanTime;
+            maskTime = other.maskTime;
+            adcChannel = other.adcChannel;
+        }
+
+        Trigger& operator=(const Trigger& other)
+        {
+            threshold = other.threshold;
+            scanTime = other.scanTime;
+            maskTime = other.maskTime;
+            adcChannel = other.adcChannel;
+
+            return *this;
         }
 
         void Process(uint8_t value, uint8_t currentTime) noexcept
