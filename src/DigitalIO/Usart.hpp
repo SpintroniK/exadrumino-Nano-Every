@@ -11,6 +11,17 @@
 
 namespace DigitalIO
 {
+    class UsartInterrupts
+    {
+    public:
+
+        UsartInterrupts() = delete;
+        ~UsartInterrupts() = delete;
+
+    private:
+
+        static void ReceivedWord() __asm__("__vector_37") __attribute__((__signal__, __used__, __externally_visible__));
+    };
 
     template <uint8_t N>
     class Usart
@@ -38,7 +49,9 @@ namespace DigitalIO
 
         usart().BAUD = BaudRate(br);
         usart().CTRLB |= USART_RXEN_bm | USART_TXEN_bm; 
+        usart().CTRLA |= USART_RXCIE_bm;
         usart().CTRLC |= USART_CMODE_ASYNCHRONOUS_gc | USART_PMODE_DISABLED_gc;
+        
     }
 
     constexpr void SendByte(uint8_t c)
@@ -48,6 +61,16 @@ namespace DigitalIO
             ;
         }        
         usart().TXDATAL = c;
+    }
+
+    constexpr uint8_t ReadByte() const
+    {
+        return usart().RXDATAL;
+    }
+
+    constexpr void ResetInterrupt()
+    {
+        usart().STATUS |= USART_RXCIF_bm;
     }
 
     // constexpr void SendString(char* str)
