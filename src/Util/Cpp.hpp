@@ -37,18 +37,43 @@ namespace Util
         return &ref;
     }
 
-    // Simplified optional implementation
+    template< class T, uint8_t N >
+    constexpr T* begin( T (&array)[N] ) noexcept
+    {
+        return &array[0];
+    }
 
+    template< class T, uint8_t N >
+    constexpr T* end( T (&array)[N] ) noexcept
+    {
+        return &array[N];
+    }
+    
+
+    template<class InputIt, class UnaryPredicate>
+    constexpr InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+    {
+        for (; first != last; ++first) 
+        {
+            if (p(*first)) 
+            {
+                return first;
+            }
+        }
+        return last;
+    }
+
+    // Simplified optional implementation
     template <typename T>
-    class Optional
+    class optional
     {        
     public:
 
-        Optional() = default;
-        ~Optional() = default;
+        optional() = default;
+        ~optional() = default;
 
         template <typename... Args>
-        Optional(Args... v) : hasValue{true}, value{v...} // Not explicit to allow initializer list construction
+        optional(Args... v) : hasValue{true}, value{v...} // Not explicit to allow initializer list construction
         {
 
         }

@@ -21,6 +21,7 @@ namespace Commands
         Arguments args{};
     };
 
+    inline constexpr const char* commands[2]{"set", "get"};
 
     class Parser
     {
@@ -31,7 +32,8 @@ namespace Commands
 
         void Parse(char c)
         {
-            
+            using namespace Util;
+
             switch(state)
             {
                 case 0:
@@ -52,9 +54,10 @@ namespace Commands
 
                     buffer.Append(c);
 
-                    if(buffer == "set")
+                    const auto it = find_if(begin(commands), end(commands), [&](const auto& v) { return buffer == v; });
+                    if(it != end(commands))
                     {
-                        type = 1;
+                        type = buffer == commands[0]? 1 : 2;
                     }
 
                     if(buffer == "snare")
@@ -84,7 +87,7 @@ namespace Commands
             }
         }
 
-        Util::Optional<Command> PopCommand()
+        Util::optional<Command> PopCommand()
         {
             if(state != 2)
             {
