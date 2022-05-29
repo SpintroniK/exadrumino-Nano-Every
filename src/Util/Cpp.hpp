@@ -31,4 +31,48 @@ namespace Util
     template< class T, class U >
     inline constexpr bool is_same_v = is_same<T, U>::value;
 
+    template <typename T>
+    constexpr T* static_addressof(T& ref)
+    {
+        return &ref;
+    }
+
+    // Simplified optional implementation
+
+    template <typename T>
+    class Optional
+    {        
+    public:
+
+        Optional() = default;
+        ~Optional() = default;
+
+        template <typename... Args>
+        Optional(Args... v) : hasValue{true}, value{v...} // Not explicit to allow initializer list construction
+        {
+
+        }
+
+        operator const bool() const noexcept
+        {
+            return hasValue;
+        }
+
+        const T& operator *() const noexcept
+        {
+            return value;
+        }
+
+        const T* operator ->() const noexcept
+        {
+            return static_addressof(value);
+        }
+
+
+    private:
+        bool hasValue{false};
+        T value{};
+
+    };
+
 } // namespace Util
