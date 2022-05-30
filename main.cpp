@@ -1,4 +1,5 @@
 #include "src/Module/Brain.hpp"
+#include "src/Commands/Executor.hpp"
 #include "src/Commands/Parser.hpp"
 #include "src/Nano.hpp"
 
@@ -56,13 +57,15 @@ void DigitalIO::UsartInterrupts::ReceivedWord()
 
     if(command)
     {
-        // char str[16]{};
-        // ::sprintf(str, "%d\n", command->type);
-        // for(uint8_t i = 0; i < ::strlen(str); ++i)
-        // {
-        //     Module::usart.SendByte(str[i]);
-        // }
-        const auto v = command->args.arg2;
+        const auto res = Commands::Executor::Run(*command);
+    
+        char str[16]{};
+        ::sprintf(str, "\n%d\n", *res);
+        for(uint8_t i = 0; i < ::strlen(str); ++i)
+        {
+            Module::usart.SendByte(str[i]);
+        }
+        const uint8_t v = 3; //command->args.arg2;
         kickThreshold = v;
 
         brain.SetPadTriggerSettings<Module::iSnare>(kickThreshold, kickScanTime, kickMaskTime);

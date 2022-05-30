@@ -40,6 +40,7 @@ namespace Module
     inline constexpr uint8_t iFloorTom = 4;
     inline constexpr uint8_t iRide = 5;
 
+
     using TriggerParam = Memory::EEPromValue<ParamType>;
 
     class Brain
@@ -156,7 +157,8 @@ namespace Module
         };
 
 
-        Pad pads[nbPads] = 
+
+        /* inline static */ Pad pads[nbPads]
         {
             Pad{kickNote}, 
             Pad{snareNote},

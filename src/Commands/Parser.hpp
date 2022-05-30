@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Command.hpp"
+
 #include "../String/String.hpp"
 #include "../Util/Cpp.hpp"
 
@@ -8,20 +10,6 @@
 namespace Commands
 {
 
-    struct Arguments
-    {
-        uint8_t target{};
-        uint8_t arg1{};
-        uint8_t arg2{};
-    };
-    
-    struct Command
-    {
-        uint8_t type{};
-        Arguments args{};
-    };
-
-    inline constexpr const char* commands[2]{"set", "get"};
 
     class Parser
     {
@@ -54,20 +42,22 @@ namespace Commands
 
                     buffer.Append(c);
 
-                    const auto it = find_if(begin(commands), end(commands), [&](const auto& v) { return buffer == v; });
-                    if(it != end(commands))
+                    const auto commandIt = find_if(begin(commands), end(commands), [&] (const auto& v) { return buffer == v; });
+                    if(commandIt != end(commands))
                     {
                         type = buffer == commands[0]? 1 : 2;
                     }
 
-                    if(buffer == "snare")
+                    const auto padIt = find_if(begin(pads), end(pads), [&] (const auto& v) { return buffer == v;  });
+                    if(padIt != end(pads))
                     {
-                        args.target = 1;
+                        args.target = padIt - begin(pads);
                     }
                     
-                    if(buffer == "threshold")
+                    const auto paramIt = find_if(begin(parameters), end(parameters), [&] (const auto& v) { return buffer == v; });
+                    if(paramIt == end(parameters))
                     {
-                        args.arg1 = 1;
+                        args.arg1 = paramIt - begin(parameters);
                         state = 2;
                     }
                     
