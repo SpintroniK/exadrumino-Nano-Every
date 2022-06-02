@@ -93,6 +93,17 @@ namespace Util
             return static_addressof(value);
         }
 
+        template <typename F>
+        auto transform(F&& f)// -> optional<decltype(f(optional<T>{}))>
+        {
+            if(!hasValue)
+            {
+                return optional{};
+            }
+
+            return optional{f(value)};
+        }
+
 
     private:
         bool hasValue{false};

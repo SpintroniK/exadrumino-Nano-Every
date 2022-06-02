@@ -20,7 +20,7 @@ namespace Commands
         {
             using namespace Util;
 
-            switch (commad.type)
+            switch(commad.type)
             {
                 case 1:
                 {
