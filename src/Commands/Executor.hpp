@@ -16,7 +16,7 @@ namespace Commands
         Executor() = delete;
         ~Executor() = default;
 
-        static constexpr Util::optional<uint8_t> Run(const Command& commad)
+        static constexpr Util::optional<Command> Run(const Command& commad)
         {
             using namespace Util;
 

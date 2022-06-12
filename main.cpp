@@ -25,6 +25,12 @@ auto kickThreshold = Memory::EEPromValue{&_kickThreshold};
 auto kickScanTime = Memory::EEPromValue{&_kickScanTime};
 auto kickMaskTime = Memory::EEPromValue{&_kickMaskTime};
 
+using TriggerParams = decltype(kickThreshold);
+
+TriggerParams triggerParams[][3]
+{
+    {kickThreshold, kickScanTime, kickMaskTime}
+};
 
 Timing::Counter<uint8_t> clock{};
 
