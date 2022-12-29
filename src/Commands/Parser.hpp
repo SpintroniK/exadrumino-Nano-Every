@@ -45,7 +45,7 @@ namespace Commands
                     const auto commandIt = find_if(begin(commands), end(commands), [&] (const auto& v) { return buffer == v; });
                     if(commandIt != end(commands))
                     {
-                        type = buffer == commands[0]? 1 : 2;
+                        type = buffer == commands[0]? 1 : 2; // 1 = set, 2 = get
                     }
 
                     const auto padIt = find_if(begin(pads), end(pads), [&] (const auto& v) { return buffer == v;  });
@@ -55,7 +55,7 @@ namespace Commands
                     }
                     
                     const auto paramIt = find_if(begin(parameters), end(parameters), [&] (const auto& v) { return buffer == v; });
-                    if(paramIt == end(parameters))
+                    if(paramIt != end(parameters))
                     {
                         args.arg1 = paramIt - begin(parameters);
                         state = 2;
@@ -63,14 +63,22 @@ namespace Commands
                     
                     break;
                 }
-                case 2: break; // Command needs to be exectued to switch to state 3
-                case 3:
+                case 2:
                 {
-                    type = 0;   
-                    args = {};    
-                    buffer.Clear();
+                    if(type == 2) // if command type is get
+                    {
+                        state = 3;
+                        break;
+                    }
 
-                    state = 0;
+                    if(c == '\n')
+                    {
+                        args.arg2 = ::atoi(value.GetData());
+                        state = 3;
+                        break;
+                    }
+
+                    value.Append(c);
 
                     break;
                 }
@@ -79,19 +87,30 @@ namespace Commands
 
         Util::optional<Command> PopCommand()
         {
-            if(state != 2)
+            if(state != 3)
             {
                 return {};
             }
 
-            state = 3;
+            const auto command = Command{type, args};
+            Reset();
 
-            return {type, args};
+            return {command};
         }
 
     private:
 
-        static constexpr uint8_t bufferLength = 16U;
+        void Reset()
+        {
+            type = 0;   
+            args = {};    
+            buffer.Clear();
+            value.Clear();
+
+            state = 0;
+        }
+
+        static constexpr uint8_t bufferLength = 32U;
 
         uint8_t index{};
         uint8_t state{};
@@ -99,6 +118,7 @@ namespace Commands
         Arguments args{};
 
         String<bufferLength> buffer{};
+        String<8U> value{};
     };
 
 } // namespace Commands

@@ -17,19 +17,23 @@ using Tcb = Timing::TCB<0>;
 
 Module::Brain brain{};
 
-volatile const uint8_t EEMEM _kickThreshold = 3;
-volatile const uint8_t EEMEM _kickScanTime = 4;
-volatile const uint8_t EEMEM _kickMaskTime = 40;
+uint8_t _kickThreshold EEMEM = 3;
+uint8_t _kickScanTime  EEMEM = 4;
+uint8_t _kickMaskTime EEMEM = 40;
 
 auto kickThreshold = Memory::EEPromValue{&_kickThreshold};
-auto kickScanTime = Memory::EEPromValue{&_kickScanTime};
-auto kickMaskTime = Memory::EEPromValue{&_kickMaskTime};
+// auto kickScanTime = Memory::EEPromValue{&_kickScanTime};
+// auto kickMaskTime = Memory::EEPromValue{&_kickMaskTime};
 
-using TriggerParams = decltype(kickThreshold);
+// uint8_t kickThreshold = 3;
+uint8_t kickScanTime = 4;
+uint8_t kickMaskTime = 40;
 
-TriggerParams triggerParams[][3]
+//using TriggerParams = uint8_t*;//decltype(kickThreshold);
+
+uint8_t* triggerParams[][3]
 {
-    {kickThreshold, kickScanTime, kickMaskTime}
+    {&_kickThreshold, &_kickScanTime, &_kickMaskTime}
 };
 
 Timing::Counter<uint8_t> clock{};
@@ -63,18 +67,27 @@ void DigitalIO::UsartInterrupts::ReceivedWord()
 
     if(command)
     {
-        const auto res = Commands::Executor::Run(*command);
+        const auto res = Commands::Executor::Run(*command, triggerParams);
+
+        // eeprom_update_byte(res, command->type);
+ 
+        // const auto value = eeprom_read_byte(res);
+        if(res != 0)
+        {
+            kickThreshold = res;
+        }
+        const uint8_t value = kickThreshold;
     
-        char str[16]{};
-        ::sprintf(str, "\n%d\n", *res);
+        char str[32]{};
+        ::sprintf(str, "\nCommand type: %d\n", value);
         for(uint8_t i = 0; i < ::strlen(str); ++i)
         {
             Module::usart.SendByte(str[i]);
         }
-        const uint8_t v = 3; //command->args.arg2;
-        kickThreshold = v;
+        // const uint8_t v = 3; //command->args.arg2;
+        // kickThreshold = v;
 
-        brain.SetPadTriggerSettings<Module::iSnare>(kickThreshold, kickScanTime, kickMaskTime);
+        // brain.SetPadTriggerSettings<Module::iSnare>(kickThreshold, kickScanTime, kickMaskTime);
     }
 }
 

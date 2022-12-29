@@ -45,13 +45,23 @@ namespace Memory
 
         EEPromValue<T> operator=(const T& val)
         {
-            eeprom_update_byte(ptr, val);
+            store(val);
             return *this;
+        }
+
+        void store(const T& val)
+        {
+            eeprom_update_byte(ptr, val);
+        }
+
+        T load() const
+        {
+            return eeprom_read_byte(ptr);
         }
 
         operator const T() const
         {
-            return eeprom_read_byte(ptr);
+            return load();
         }
 
     private:

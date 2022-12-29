@@ -16,19 +16,19 @@ namespace Commands
         Executor() = delete;
         ~Executor() = default;
 
-        static constexpr Util::optional<Command> Run(const Command& commad)
+        static uint8_t Run(const Command& command, uint8_t*(&tp)[1][3])
         {
             using namespace Util;
 
-            switch(commad.type)
+            switch(command.type)
             {
-                case 1:
+                case 1: // set
                 {
-                    return 10;
+                    return command.args.arg2;
                 }
-                case 2:
+                case 2: // get
                 {
-                    return 12;
+                    return 0;
                 }
                 
                 default:
